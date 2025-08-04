@@ -1,0 +1,129 @@
+syntax = "proto3";
+
+option go_package = "github.com/Dryluigi/go-grpc-ecommerce-be/pb/order";
+
+import "buf/validate/validate.proto";
+import "common/base_response.proto";
+import "common/pagination.proto";
+import "google/protobuf/timestamp.proto";
+
+package order;
+
+service OrderService {
+    rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+    rpc ListOrderAdmin(ListOrderAdminRequest) returns (ListOrderAdminResponse);
+    rpc ListOrder(ListOrderRequest) returns (ListOrderResponse);
+    rpc DetailOrder(DetailOrderRequest) returns (DetailOrderResponse);
+    rpc UpdateOrderStatus(UpdateOrderStatusRequest) returns (UpdateOrderStatusResponse);
+}
+
+message CreateOrderRequestProductItem {
+    string id = 1;
+    int64 quantity = 2;
+}
+
+message CreateOrderRequest {
+    string full_name = 1 [(buf.validate.field).string = { min_len: 1, max_len: 255 }];
+    string address = 2 [(buf.validate.field).string = { min_len: 1, max_len: 255 }];
+    string phone_number = 3 [(buf.validate.field).string = { min_len: 1, max_len: 255 }];
+    string notes = 4 [(buf.validate.field).string = { max_len: 255 }];
+    repeated CreateOrderRequestProductItem products = 5;
+}
+
+message CreateOrderResponse {
+    common.BaseResponse base = 1;
+    string id = 2;
+}
+
+// List Order Admin
+message ListOrderAdminRequest {
+    common.PaginationRequest pagination = 1;
+}
+
+message ListOrderAdminResponseItemProduct {
+    string id = 1;
+    string name = 2;
+    double price = 3;
+    int64 quantity = 4;
+}
+
+message ListOrderAdminResponseItem {
+    string id = 1;
+    string number = 2;
+    string customer = 3;
+    string status_code = 4;
+    double total = 5;
+    google.protobuf.Timestamp created_at = 6;
+    repeated ListOrderAdminResponseItemProduct products = 7;
+}
+
+message ListOrderAdminResponse {
+    common.BaseResponse base = 1;
+    common.PaginationResponse pagination = 2;
+    repeated ListOrderAdminResponseItem items = 3;
+}
+
+// List Order
+message ListOrderRequest {
+    common.PaginationRequest pagination = 1;
+}
+
+message ListOrderResponseItemProduct {
+    string id = 1;
+    string name = 2;
+    double price = 3;
+    int64 quantity = 4;
+}
+
+message ListOrderResponseItem {
+    string id = 1;
+    string number = 2;
+    string customer = 3;
+    string status_code = 4;
+    double total = 5;
+    google.protobuf.Timestamp created_at = 6;
+    repeated ListOrderResponseItemProduct products = 7;
+    string xendit_invoice_url = 8;
+}
+
+message ListOrderResponse {
+    common.BaseResponse base = 1;
+    common.PaginationResponse pagination = 2;
+    repeated ListOrderResponseItem items = 3;
+}
+
+message DetailOrderRequest {
+    string id = 1 [(buf.validate.field).string = { min_len: 1, max_len: 255 }];
+}
+
+message DetailOrderResponseItem {
+    string id = 1;
+    string name = 2;
+    double price = 3;
+    int64 quantity = 4;
+}
+
+message DetailOrderResponse {
+    common.BaseResponse base = 1;
+    string id = 2;
+    string number = 3;
+    string user_full_name = 4;
+    string address = 5;
+    string phone_number = 6;
+    string notes = 7;
+    string order_status_code = 8;
+    google.protobuf.Timestamp created_at = 9;
+    string xendit_invoice_url = 10;
+    repeated DetailOrderResponseItem items = 11;
+    double total = 12;
+    google.protobuf.Timestamp expired_at = 13;
+}
+
+message UpdateOrderStatusRequest {
+    string order_id = 1 [(buf.validate.field).string = { min_len: 1, max_len: 255 }];
+    string new_status_code = 2 [(buf.validate.field).string = { min_len: 1, max_len: 255 }];
+}
+
+message UpdateOrderStatusResponse {
+    common.BaseResponse base = 1;
+}
