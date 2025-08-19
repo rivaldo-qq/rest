@@ -59,7 +59,7 @@ func UploadProductImageHandler(c *fiber.Ctx) error {
 
 	// bikin nama unik
 	timestamp := time.Now().UnixNano()
-	fileName := fmt.Sprintf("product_%d%s", timestamp, filepath.Ext(file.Filename)
+	fileName := fmt.Sprintf("product_%d%s", timestamp, filepath.Ext(file.Filename))
 
 	// buka file sebagai io.Reader
 	src, err := file.Open()
@@ -87,10 +87,10 @@ func UploadProductImageHandler(c *fiber.Ctx) error {
 			"message": "failed to upload file",
 		})
 	}
+
 	// kalau bucket public → bisa akses pakai URL ini
-	publicUrl := fmt.Sprintf("https://%s.supabase.co/storage/v1/object/public/cikalbakalstorage/%s",
-    "lqskpaecrquwwsezlwcb",
-		 fileName)
+	publicUrl := fmt.Sprintf("%s/storage/v1/object/public/products/%s",
+		"https://lqskpaecrquwwsezlwcb.supabase.co", fileName)
 
 	return c.JSON(fiber.Map{
 		"success":   true,
