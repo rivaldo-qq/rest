@@ -79,14 +79,16 @@ func UploadProductImageHandler(c *fiber.Ctx) error {
 	}
 
 	// upload ke bucket "products"
-	_, err = storageClient.UploadFile("cikalbakalstorage", fileName, src, opts)
-	if err != nil {
-		fmt.Println("upload error: %v\n", err)
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
-			"success": false,
-			"message": err.Error(),
-		})
-	}
+	bucket := storageClient.Bucket("products") // make sure "products" bucket exists
+    err = bucket.Upload(context.Background(), fileName, src, file.Size, storage.FileOptions{
+        ContentType: file.Header.Get("Content-Type"),
+    })
+    if err != nil {
+        return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+            "success": false,
+            "message": "upload failed",
+        })
+    }
 
 	// kalau bucket public → bisa akses pakai URL ini
 	publicUrl := fmt.Sprintf("https://%s.supabase.co/storage/v1/object/public/cikalbakalstorage/%s",
