@@ -14,11 +14,9 @@ import (
 var storageClient *storage.Client
 
 func init() {
-	supabaseUrl := "https://lqskpaecrquwwsezlwcb.supabase.co"
-	supabaseKey := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxxc2twYWVjcnF1d3dzZXpsd2NiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mjg3MzYwNCwiZXhwIjoyMDY4NDQ5NjA0fQ.b7iOyA5lRdV-Q11PuPDrTnsW9ho45kk1D9TzK_aAqEU"
-
-	// PERBAIKAI 1: Tambahkan "/storage/v1" di akhir URL
-	storageClient = storage.NewClient(supabaseUrl+"/storage/v1", supabaseKey, nil)
+	supabaseUrl := "https://lqskpaecrquwwsezlwcb.supabase.co/storage/v1"
+	supabaseKey := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxxc2twYWVjcnF1d3dzZXpsd2NiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mjg3MzYwNCwiZXhwIjoyMDY4NDQ5NjA0fQ.b7iOyA5lRdV-Q11PuPDrTnsW9ho45kk1D9TzK_aAqEU" // ⚠️ pakai service role di server
+	storageClient = storage.NewClient(supabaseUrl, supabaseKey, nil)
 }
 
 func UploadProductImageHandler(c *fiber.Ctx) error {
@@ -59,7 +57,7 @@ func UploadProductImageHandler(c *fiber.Ctx) error {
 		})
 	}
 
-	// PERBAIKAN 3: Tambahkan kurung tutup yang hilang
+	// bikin nama unik
 	timestamp := time.Now().UnixNano()
 	fileName := fmt.Sprintf("product_%d%s", timestamp, filepath.Ext(file.Filename))
 
@@ -73,26 +71,26 @@ func UploadProductImageHandler(c *fiber.Ctx) error {
 	}
 	defer src.Close()
 
-	// PERBAIKAN 2: Gunakan nilai langsung, bukan pointer, untuk FileOptions
+	// set file options
+	upsert := true
 	opts := storage.FileOptions{
-		ContentType: contentType,
-		Upsert:      true,
+		ContentType: &contentType, // pointer string
+		Upsert:      &upsert,      // pointer bool
 	}
 
-	// upload ke bucket "cikalbakalstorage"
+	// upload ke bucket "products"
 	_, err = storageClient.UploadFile("cikalbakalstorage", fileName, src, opts)
 	if err != nil {
-		fmt.Println("upload error:", err) // Cek error detail di sini
+		fmt.Println("upload error:", err)
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"success": false,
-			"message": "failed to upload file to storage",
+			"message": "failed to upload file",
 		})
 	}
 
-	// SARAN: Gunakan fungsi bawaan untuk mendapatkan URL publik
-	publicUrl := storageClient.GetPublicUrl("cikalbakalstorage", fileName, storage.UrlOptions{
-        Download: false,
-    }).SignedURL
+	// kalau bucket public → bisa akses pakai URL ini
+	publicUrl := fmt.Sprintf("%s/storage/v1/object/public/products/%s",
+		"https://lqskpaecrquwwsezlwcb.supabase.co", fileName)
 
 	return c.JSON(fiber.Map{
 		"success":   true,
