@@ -20,13 +20,7 @@ func init() {
 }
 
 func UploadProductImageHandler(c *fiber.Ctx) error {
-	file, err := c.FormFile("image")
-	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"success": false,
-			"message": "image data not found",
-		})
-	}
+	
 
 	// validasi extension
 	ext := strings.ToLower(filepath.Ext(file.Filename))
