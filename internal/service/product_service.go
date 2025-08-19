@@ -62,25 +62,7 @@ func (ps *productService) CreateProduct(ctx context.Context, request *product.Cr
 	}, nil
 }
 
-func (ps *productService) DetailProduct(ctx context.Context, request *product.DetailProductRequest) (*product.DetailProductResponse, error) {
-	// queyr ke db dengan data id
-	
-	// apabila null, kita return not found
-	if productEntity == nil {
-		return &product.DetailProductResponse{
-			Base: utils.NotFoundResponse("Product not found"),
-		}, nil
-	}
 
-	return &product.DetailProductResponse{
-		Base:        utils.SuccessResponse("Get product detail success"),
-		Id:          productEntity.Id,
-		Name:        productEntity.Name,
-		Description: productEntity.Description,
-		Price:       productEntity.Price,
-		ImageUrl:    fmt.Sprintf("%s/product/%s", os.Getenv("STORAGE_SERVICE_URL"), productEntity.ImageFileName),
-	}, nil
-}
 
 func (ps *productService) EditProduct(ctx context.Context, request *product.EditProductRequest) (*product.EditProductResponse, error) {
 	claims, err := jwtentity.GetClaimsFromContext(ctx)
@@ -91,28 +73,14 @@ func (ps *productService) EditProduct(ctx context.Context, request *product.Edit
 		return nil, utils.UnauthenticatedResponse()
 	}
 
-	productEntity, err := ps.productRepository.GetProductById(ctx, request.Id)
-	if err != nil {
-		return nil, err
-	}
+	
 	if productEntity == nil {
 		return &product.EditProductResponse{
 			Base: utils.NotFoundResponse("Product not found"),
 		}, nil
 	}
 
-	if productEntity.ImageFileName != request.ImageFileName {
-		newImagePath := filepath.Join("storage", "product", request.ImageFileName)
-		_, err = os.Stat(newImagePath)
-		if err != nil {
-			if os.IsNotExist(err) {
-				return &product.EditProductResponse{
-					Base: utils.BadRequestResponse("Image not found"),
-				}, nil
-			}
-
-			return nil, err
-		}
+	
 
 		oldImagePath := filepath.Join("storage", "product",)
 		err = os.Remove(oldImagePath)
@@ -121,15 +89,7 @@ func (ps *productService) EditProduct(ctx context.Context, request *product.Edit
 		}
 	}
 
-	newProduct := entity.Product{
-		Id:            request.Id,
-		Name:          request.Name,
-		Description:   request.Description,
-		Price:         request.Price,
-		ImageFileName: request.ImageFileName,
-		UpdatedAt:     time.Now(),
-		UpdatedBy:     &claims.FullName,
-	}
+	
 
 	err = ps.productRepository.UpdateProduct(ctx, &newProduct)
 	if err != nil {
