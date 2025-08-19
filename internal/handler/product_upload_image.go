@@ -79,7 +79,7 @@ func UploadProductImageHandler(c *fiber.Ctx) error {
 	}
 
 	// upload ke bucket "products"
-	bucket := storageClient.Bucket("products") // make sure "products" bucket exists
+	bucket := storageClient.Bucket("cikalbakalstorage") // make sure "products" bucket exists
     err = bucket.Upload(context.Background(), fileName, src, file.Size, storage.FileOptions{
         ContentType: file.Header.Get("Content-Type"),
     })
