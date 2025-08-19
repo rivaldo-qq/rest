@@ -3,10 +3,9 @@ package main
 import (
 	"context"
 	"log"
-	"mime"
 	"net/http"
 	"os"
-	"path"
+	"strings"
 
 	"github.com/Dryluigi/go-grpc-ecommerce-be/internal/handler"
 	"github.com/Dryluigi/go-grpc-ecommerce-be/internal/repository"
@@ -15,31 +14,34 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
+	storage "github.com/supabase-community/storage-go"
 )
+
+var storageClient *storage.Client
+
+func init() {
+	supabaseUrl := "https://lqskpaecrquwwsezlwcb.supabase.co"
+	supabaseKey := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxxc2twYWVjcnF1d3dzZXpsd2NiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mjg3MzYwNCwiZXhwIjoyMDY4NDQ5NjA0fQ.b7iOyA5lRdV-Q11PuPDrTnsW9ho45kk1D9TzK_aAqEU" // ⚠️ pakai service role di server
+	storageClient = storage.NewClient(supabaseUrl, supabaseKey, nil)
+}
 
 func handleGetFileName(c *fiber.Ctx) error {
 	fileNameParam := c.Params("filename")
-	filePath := path.Join("storage", "product", fileNameParam)
-	if _, err := os.Stat(filePath); err != nil {
-		if os.IsNotExist(err) {
+
+	// coba download dari Supabase Storage
+	data, err := storageClient.DownloadFile("cikalbakalstorage", fileNameParam)
+	if err != nil {
+		// kalau error 404 (file nggak ada di bucket)
+		if strings.Contains(err.Error(), "Not Found") {
 			return c.Status(http.StatusNotFound).SendString("Not Found")
 		}
-
 		log.Println(err)
 		return c.Status(http.StatusInternalServerError).SendString("Internal Server Error")
 	}
-
-	file, err := os.Open(filePath)
-	if err != nil {
-		log.Println(err)
-		return c.Status(http.StatusInternalServerError).SendString("Internal Server Error")
-	}
-
-	ext := path.Ext(filePath)
-	mimeType := mime.TypeByExtension(ext)
+	mimeType := http.DetectContentType(data)
 
 	c.Set("Content-Type", mimeType)
-	return c.SendStream(file)
+	return c.Send(data)
 }
 
 func main() {

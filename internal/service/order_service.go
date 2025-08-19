@@ -127,7 +127,7 @@ func (os *orderService) CreateOrder(ctx context.Context, request *order.CreateOr
 			GivenNames: claims.FullName,
 		},
 		Currency:           "IDR",
-		SuccessRedirectURL: fmt.Sprintf("%s/checkout/%s/success", operatingsystem.Getenv("FRONTEND_BASE_URL"), orderEntity.Id),
+		SuccessRedirectURL: fmt.Sprintf(operatingsystem.Getenv("FRONTEND_BASE_URL")),
 		Items:              invoiceItems,
 	})
 	if xenditErr != nil {

@@ -13,7 +13,16 @@ import (
 	"github.com/Dryluigi/go-grpc-ecommerce-be/internal/utils"
 	"github.com/Dryluigi/go-grpc-ecommerce-be/pb/product"
 	"github.com/google/uuid"
+	storage "github.com/supabase-community/storage-go"
 )
+
+func init() {
+	supabaseUrl := "https://lqskpaecrquwwsezlwcb.supabase.co"
+	supabaseKey := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxxc2twYWVjcnF1d3dzZXpsd2NiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mjg3MzYwNCwiZXhwIjoyMDY4NDQ5NjA0fQ.b7iOyA5lRdV-Q11PuPDrTnsW9ho45kk1D9TzK_aAqEU" // ⚠️ pakai service role di server
+	storageClient = storage.NewClient(supabaseUrl, supabaseKey, nil)
+}
+
+var storageClient *storage.Client
 
 type IProductService interface {
 	CreateProduct(ctx context.Context, request *product.CreateProductRequest) (*product.CreateProductResponse, error)
@@ -39,17 +48,15 @@ func (ps *productService) CreateProduct(ctx context.Context, request *product.Cr
 	}
 
 	// cek juga apakah image nya ada ?
-	imagePath := filepath.Join("storage", "product", request.ImageFileName)
-	_, err = os.Stat(imagePath)
+	// cek apakah file ada di Supabase
+	_, err = storageClient.DownloadFile("cikalbakalstorage", request.ImageFileName)
 	if err != nil {
-		if os.IsNotExist(err) {
-			return &product.CreateProductResponse{
-				Base: utils.BadRequestResponse("File not found"),
-			}, nil
-		}
-
-		return nil, err
+		return &product.CreateProductResponse{
+			Base: utils.BadRequestResponse("File not found in Supabase"),
+		}, nil
 	}
+
+	// File ditemukan
 
 	productEntity := entity.Product{
 		Id:            uuid.NewString(),
