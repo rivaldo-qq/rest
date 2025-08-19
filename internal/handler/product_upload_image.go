@@ -81,7 +81,7 @@ func UploadProductImageHandler(c *fiber.Ctx) error {
 	// upload ke bucket "products"
 	_, err = storageClient.UploadFile("cikalbakalstorage", fileName, src, opts)
 	if err != nil {
-		fmt.Println("upload error:", err)
+		fmt.Println("upload error: %v\n", err)
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"success": false,
 			"message": "failed to upload file",
