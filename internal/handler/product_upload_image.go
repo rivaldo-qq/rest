@@ -84,13 +84,13 @@ func UploadProductImageHandler(c *fiber.Ctx) error {
 		fmt.Println("upload error:", err)
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"success": false,
-			"message": "failed to upload file",
+			"message": "failed to upload file" + err.Error() ,
 		})
 	}
 
 	// kalau bucket public → bisa akses pakai URL ini
-	publicUrl := fmt.Sprintf("%s/storage/v1/object/public/cikalbakalstorage/%s",
-		"https://lqskpaecrquwwsezlwcb.supabase.co", fileName)
+	publicUrl := fmt.Sprintf("%s/storage/v1/object/public/%s/%s",
+		"https://lqskpaecrquwwsezlwcb.supabase.co", fileName, "cikalbakalstorage",)
 
 	return c.JSON(fiber.Map{
 		"success":   true,
