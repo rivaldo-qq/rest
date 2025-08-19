@@ -20,7 +20,7 @@ import (
 var storageClient *storage.Client
 
 func init() {
-	supabaseUrl := "https://lqskpaecrquwwsezlwcb.supabase.co"
+	supabaseUrl := "https://lqskpaecrquwwsezlwcb.supabase.co/storage/v1"
 	supabaseKey := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxxc2twYWVjcnF1d3dzZXpsd2NiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mjg3MzYwNCwiZXhwIjoyMDY4NDQ5NjA0fQ.b7iOyA5lRdV-Q11PuPDrTnsW9ho45kk1D9TzK_aAqEU" // ⚠️ pakai service role di server
 	storageClient = storage.NewClient(supabaseUrl, supabaseKey, nil)
 }
