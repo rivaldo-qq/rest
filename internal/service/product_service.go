@@ -12,7 +12,7 @@ import (
 	"github.com/Dryluigi/go-grpc-ecommerce-be/internal/repository"
 	"github.com/Dryluigi/go-grpc-ecommerce-be/internal/utils"
 	"github.com/Dryluigi/go-grpc-ecommerce-be/pb/product"
-	"github.com/google/uuid"
+	
 	storage "github.com/supabase-community/storage-go"
 )
 
