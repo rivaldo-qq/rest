@@ -84,7 +84,7 @@ func UploadProductImageHandler(c *fiber.Ctx) error {
 		fmt.Println("upload error: %v\n", err)
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
 			"success": false,
-			"message": "failed to upload file",
+			"message": err.Error(),
 		})
 	}
 
