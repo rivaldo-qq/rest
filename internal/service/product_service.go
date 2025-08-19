@@ -54,10 +54,7 @@ func (ps *productService) CreateProduct(ctx context.Context, request *product.Cr
 	// File ditemukan
 
 	
-	err = ps.productRepository.CreateNewProduct(ctx)
-	if err != nil {
-		return nil, err
-	}
+	
 
 	return &product.CreateProductResponse{
 		Base: utils.SuccessResponse("Product is created"),
