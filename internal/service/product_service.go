@@ -54,23 +54,20 @@ func (ps *productService) CreateProduct(ctx context.Context, request *product.Cr
 	// File ditemukan
 
 	
-	err = ps.productRepository.CreateNewProduct(ctx, &productEntity)
+	err = ps.productRepository.CreateNewProduct(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	return &product.CreateProductResponse{
 		Base: utils.SuccessResponse("Product is created"),
-		Id:   productEntity.Id,
+		
 	}, nil
 }
 
 func (ps *productService) DetailProduct(ctx context.Context, request *product.DetailProductRequest) (*product.DetailProductResponse, error) {
 	// queyr ke db dengan data id
-	productEntity, err := ps.productRepository.GetProductById(ctx, request.Id)
-	if err != nil {
-		return nil, err
-	}
+	
 	// apabila null, kita return not found
 	if productEntity == nil {
 		return &product.DetailProductResponse{
@@ -120,7 +117,7 @@ func (ps *productService) EditProduct(ctx context.Context, request *product.Edit
 			return nil, err
 		}
 
-		oldImagePath := filepath.Join("storage", "product", productEntity.ImageFileName)
+		oldImagePath := filepath.Join("storage", "product",)
 		err = os.Remove(oldImagePath)
 		if err != nil {
 			return nil, err
@@ -157,10 +154,7 @@ func (ps *productService) DeleteProduct(ctx context.Context, request *product.De
 		return nil, utils.UnauthenticatedResponse()
 	}
 
-	productEntity, err := ps.productRepository.GetProductById(ctx, request.Id)
-	if err != nil {
-		return nil, err
-	}
+	
 	if productEntity == nil {
 		return &product.DeleteProductResponse{
 			Base: utils.NotFoundResponse("Product not found"),
