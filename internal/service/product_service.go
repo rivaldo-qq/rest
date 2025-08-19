@@ -51,9 +51,9 @@ func (ps *productService) CreateProduct(ctx context.Context, request *product.Cr
 	// cek apakah file ada di Supabase
 	_, err = storageClient.DownloadFile("cikalbakalstorage", request.ImageFileName)
 	if err != nil {
-    // Mengembalikan error gRPC yang sesungguhnya
-    return nil, status.Errorf(codes.NotFound, "file '%s' not found in storage", request.ImageFileName)
-}, nil
+		return &product.CreateProductResponse{
+			return nil, status.Errorf(codes.NotFound, "file '%s' not found in storage", request.ImageFileName),
+		}
 	}
 
 	// File ditemukan
