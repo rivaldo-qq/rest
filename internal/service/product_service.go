@@ -53,15 +53,7 @@ func (ps *productService) CreateProduct(ctx context.Context, request *product.Cr
 
 	// File ditemukan
 
-	productEntity := entity.Product{
-		Id:            uuid.NewString(),
-		Name:          request.Name,
-		Description:   request.Description,
-		Price:         request.Price,
-		ImageFileName: request.ImageFileName,
-		CreatedAt:     time.Now(),
-		CreatedBy:     claims.FullName,
-	}
+	
 	err = ps.productRepository.CreateNewProduct(ctx, &productEntity)
 	if err != nil {
 		return nil, err
