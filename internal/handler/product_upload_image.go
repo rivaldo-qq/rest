@@ -90,7 +90,7 @@ func UploadProductImageHandler(c *fiber.Ctx) error {
 
 	// kalau bucket public → bisa akses pakai URL ini
 	publicUrl := fmt.Sprintf("%s/storage/v1/object/public/cikalbakalstorage/%s",
-		"https://lqskpaecrquwwsezlwcb.supabase.co", fileName)
+		"https://lqskpaecrquwwsezlwcb.supabase.co", fileName, "cikalbakalstorage")
 
 	return c.JSON(fiber.Map{
 		"success":   true,
