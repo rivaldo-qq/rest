@@ -49,7 +49,7 @@ func (ps *productService) CreateProduct(ctx context.Context, request *product.Cr
 
 	// cek juga apakah image nya ada ?
 	// cek apakah file ada di Supabase
-	_, err = storageClient.DownloadFile("products", request.ImageFileName)
+	_, err = storageClient.DownloadFile("cikalbakalstorage", request.ImageFileName)
 	if err != nil {
 		return &product.CreateProductResponse{
 			Base: utils.BadRequestResponse("File not found in Supabase"),
