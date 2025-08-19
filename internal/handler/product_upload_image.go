@@ -58,8 +58,7 @@ func UploadProductImageHandler(c *fiber.Ctx) error {
 	}
 
 	// bikin nama unik
-	timestamp := time.Now().UnixNano()
-	fileName := fmt.Sprintf("product_%d%s", timestamp, filepath.Ext(file.Filename))
+
 
 	// buka file sebagai io.Reader
 	src, err := file.Open()
@@ -79,6 +78,8 @@ func UploadProductImageHandler(c *fiber.Ctx) error {
 	}
 
 	// upload ke bucket "products"
+	timestamp := time.Now().UnixNano()
+	fileName := fmt.Sprintf("product_%d%s", timestamp, filepath.Ext(file.Filename)
 	_, err = storageClient.UploadFile("cikalbakalstorage", fileName, src, opts)
 	if err != nil {
 		fmt.Println("upload error:", err)
