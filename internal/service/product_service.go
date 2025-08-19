@@ -46,16 +46,7 @@ func (ps *productService) CreateProduct(ctx context.Context, request *product.Cr
 	if claims.Role != entity.UserRoleAdmin {
 		return nil, utils.UnauthenticatedResponse()
 	}
-
-	// cek juga apakah image nya ada ?
-	// cek apakah file ada di Supabase
 	
-
-	// File ditemukan
-
-	
-	
-
 	return &product.CreateProductResponse{
 		Base: utils.SuccessResponse("Product is created"),
 		
@@ -73,23 +64,12 @@ func (ps *productService) EditProduct(ctx context.Context, request *product.Edit
 		return nil, utils.UnauthenticatedResponse()
 	}
 
-	
-	if productEntity == nil {
-		return &product.EditProductResponse{
-			Base: utils.NotFoundResponse("Product not found"),
-		}, nil
-	}
-
-	
-
 		oldImagePath := filepath.Join("storage", "product",)
 		err = os.Remove(oldImagePath)
 		if err != nil {
 			return nil, err
 		}
 	}
-
-	
 
 	err = ps.productRepository.UpdateProduct(ctx, &newProduct)
 	if err != nil {
@@ -109,13 +89,6 @@ func (ps *productService) DeleteProduct(ctx context.Context, request *product.De
 	}
 	if claims.Role != entity.UserRoleAdmin {
 		return nil, utils.UnauthenticatedResponse()
-	}
-
-	
-	if productEntity == nil {
-		return &product.DeleteProductResponse{
-			Base: utils.NotFoundResponse("Product not found"),
-		}, nil
 	}
 
 	err = ps.productRepository.DeleteProduct(ctx, request.Id, time.Now(), claims.FullName)
