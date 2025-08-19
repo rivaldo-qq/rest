@@ -53,7 +53,7 @@ func (ps *productService) CreateProduct(ctx context.Context, request *product.Cr
 	if err != nil {
 		return &product.CreateProductResponse{
 			return nil, status.Errorf(codes.NotFound, "file '%s' not found in storage", request.ImageFileName),
-		}
+		},
 	}
 
 	// File ditemukan
